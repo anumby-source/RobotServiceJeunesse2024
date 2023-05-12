@@ -7,3 +7,8 @@ L'équipe de développement est conservée.
 
 Philippe, Pierre, Bernard, Lucas, Arnaud, Chris
 
+Il a été produit un [état des lieux](https://docs.google.com/document/d/17tYH8CvMcLmb-oSqFqLQw5ECSPzD8cmtk5fQQW-n_Sc/edit#heading=h.r0ddkabqqieo) détaillé de la version 2023, montrant ce que l'on devrait corriger.
+
+
+
+
