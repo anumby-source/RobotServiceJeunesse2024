@@ -12,6 +12,9 @@ Il a été produit un [état des lieux](https://github.com/anumby-source/RobotSe
 
 # HTTP server pour ESP32-CAM
 
+- doc: https://randomnerdtutorials.com/esp32-useful-wi-fi-functions-arduino/
+- doc: https://randomnerdtutorials.com/esp32-access-point-ap-web-server/
+  
 Ici on liste quelques liens pour configurer un HTTP server pour ESP32-CAM avec multi clients
 
 - https://www.hackster.io/anatoli-arkhipenko/multi-client-mjpeg-streaming-from-esp32-47768f + https://github.com/arkhipenko/esp32-cam-mjpeg-multiclient
