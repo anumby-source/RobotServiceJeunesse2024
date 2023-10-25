@@ -182,3 +182,51 @@ void countPulse() {
 
 Note: Pour convertir le nombre d'impulsions par seconde en rotations par minute (RPM), vous devez connaître le nombre d'aimants (ou de pôles magnétiques) sur votre disque ou roue. Par exemple, si vous avez 20 aimants, et que vous comptez 60 impulsions en une seconde, cela signifie que le moteur a fait 3 tours complets en cette seconde (60/20 = 3 tours par seconde, soit 180 tours par minute).
 
+https://arduino.blaisepascal.fr/les-codeurs-incrementaux/
+
+# Et en utilisant un encodeur optique ?
+
+L'utilisation d'un encodeur optique est une autre excellente méthode pour mesurer la vitesse de rotation d'un moteur. Un encodeur optique fonctionne en détectant les passages de fentes ou de marques sur un disque à travers lequel une lumière LED est émise et captée par un phototransistor.
+
+Voici les étapes pour mesurer la vitesse de rotation avec un encodeur optique:
+
+Installation:
+
+Fixez le disque avec des fentes (généralement appelé disque encodeur) sur l'arbre du moteur.
+Montez l'encodeur optique de manière à ce qu'il puisse lire le passage des fentes du disque lorsqu'il tourne.
+Câblage:
+
+Connectez la broche VCC ou + de l'encodeur à une source d'alimentation (généralement 5V).
+Connectez la broche GND ou - au GND de votre plateforme (par exemple, Arduino).
+Connectez la broche de sortie de l'encodeur (généralement désignée OUT ou SIGNAL) à une broche d'entrée numérique de votre plateforme.
+Programmation:
+
+Comme avec l'encodeur à effet Hall, configurez une interruption sur la broche d'entrée pour détecter chaque passage de fente. La vitesse de rotation sera proportionnelle au nombre de fentes détectées pendant un intervalle de temps donné.
+Exemple de code pour Arduino:
+
+```
+const int encoderPin = 2; // La broche où est connectée la sortie de l'encodeur optique
+volatile int pulseCount = 0; // Nombre de fentes détectées
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(encoderPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(encoderPin), countPulse, RISING); // Interruption sur front montant
+}
+
+void loop() {
+  delay(1000); // Attend 1 seconde
+  detachInterrupt(digitalPinToInterrupt(encoderPin)); // Désactive l'interruption
+  int pulsesPerSecond = pulseCount; // Lit le nombre de fentes détectées sur la dernière seconde
+  pulseCount = 0; // Réinitialise le compteur
+  attachInterrupt(digitalPinToInterrupt(encoderPin), countPulse, RISING); // Réactive l'interruption
+  Serial.println(pulsesPerSecond); // Affiche le nombre de fentes détectées par seconde
+}
+
+void countPulse() {
+  pulseCount++;
+}
+```
+
+Note: Pour convertir le nombre de fentes détectées par seconde en RPM, vous devez connaître le nombre total de fentes sur le disque encodeur. Par exemple, si le disque a 20 fentes et que vous comptez 60 fentes en une seconde, cela signifie que le moteur a fait 3 tours complets en cette seconde (60/20 = 3 tours par seconde, soit 180 RPM).
+
