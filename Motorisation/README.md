@@ -138,3 +138,47 @@ void countPulse() {
 
 Note: Vous devrez connaître le nombre d'impulsions générées par l'encodeur par tour complet du moteur pour convertir le nombre d'impulsions par seconde en rotations par minute (RPM).
 
+# comment utiliser le module HC020K pour mesurer la vitesse de rotation ?
+
+Le module HC020K est un module d'encodeur à effet Hall couramment utilisé pour mesurer la vitesse de rotation des moteurs à courant continu. Il comprend généralement deux composants principaux: l'encodeur lui-même (qui détecte le passage d'aimants à l'aide d'un capteur à effet Hall) et un disque à aimants (ou des aimants intégrés à la roue du moteur).
+
+Pour mesurer la vitesse de rotation avec le module HC020K, suivez les étapes suivantes:
+
+## Installation:
+Fixez le disque à aimants sur l'arbre du moteur ou assurez-vous que les aimants sont bien fixés sur la roue du moteur.
+Placez l'encodeur HC020K de manière à ce que le capteur à effet Hall soit à proximité des aimants lorsqu'ils tournent.
+## Câblage:
+Connectez la broche VCC du HC020K à une source d'alimentation de 5V (si vous utilisez un Arduino ou une autre plateforme compatible 5V).
+Connectez la broche GND au GND de votre plateforme.
+Connectez la broche OUT (sortie de signal) à une broche d'entrée numérique de votre plateforme.
+## Programmation:
+Configurez une interruption sur la broche d'entrée pour détecter chaque passage d'aimant (c'est-à-dire chaque impulsion). La vitesse de rotation sera proportionnelle au nombre d'impulsions détectées pendant un intervalle de temps donné.
+
+Exemple de code pour Arduino:
+
+```
+const int encoderPin = 2; // La broche où est connectée la sortie OUT du HC020K
+volatile int pulseCount = 0; // Nombre d'impulsions détectées
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(encoderPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(encoderPin), countPulse, RISING); // Interruption sur front montant
+}
+
+void loop() {
+  delay(1000); // Attend 1 seconde
+  detachInterrupt(digitalPinToInterrupt(encoderPin)); // Désactive l'interruption
+  int pulsesPerSecond = pulseCount; // Lit le nombre d'impulsions sur la dernière seconde
+  pulseCount = 0; // Réinitialise le compteur
+  attachInterrupt(digitalPinToInterrupt(encoderPin), countPulse, RISING); // Réactive l'interruption
+  Serial.println(pulsesPerSecond); // Affiche le nombre d'impulsions par seconde
+}
+
+void countPulse() {
+  pulseCount++;
+}
+```
+
+Note: Pour convertir le nombre d'impulsions par seconde en rotations par minute (RPM), vous devez connaître le nombre d'aimants (ou de pôles magnétiques) sur votre disque ou roue. Par exemple, si vous avez 20 aimants, et que vous comptez 60 impulsions en une seconde, cela signifie que le moteur a fait 3 tours complets en cette seconde (60/20 = 3 tours par seconde, soit 180 tours par minute).
+
