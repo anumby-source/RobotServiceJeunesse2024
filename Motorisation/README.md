@@ -90,6 +90,60 @@ Autre point important: Assurez-vous que les niveaux de tension sont compatibles.
 
 Après avoir établi le câblage, vous pouvez utiliser l'IDE Arduino avec la bibliothèque ESP8266 pour programmer votre ESP8266 et contrôler les moteurs. Utilisez la fonction analogWrite pour envoyer une valeur PWM aux broches ENA et ENB pour réguler la vitesse des moteurs.
 
+# Configuration ESP8266 + un circuit LN298N et 2 moteurs à courant continu. Je veux ajouter une télécommande infrarouge pour commander les moteurs
+
+Pour ajouter une télécommande infrarouge (IR) pour commander les moteurs avec votre configuration ESP8266 et L298N, vous aurez besoin d'un récepteur IR (par exemple, un module IR comme le TSOP38238) et d'une télécommande IR compatible. Voici comment vous pouvez procéder :
+
+## Connexion du récepteur IR :
+* Connectez la broche de signal du récepteur IR à une broche d'entrée numérique de votre ESP8266.
+* Connectez la broche VCC du récepteur IR à une source d'alimentation 3,3V de l'ESP8266.
+* Connectez la broche GND du récepteur IR à la masse (GND) de l'ESP8266.
+
+## Programmation IR :
+Vous devrez utiliser une bibliothèque IR pour Arduino compatible avec votre ESP8266. Une bibliothèque couramment utilisée est "IRremoteESP8266". Vous pouvez l'installer depuis le gestionnaire de bibliothèques Arduino.
+Utilisez la bibliothèque pour écouter les signaux infrarouges à partir de la télécommande.
+
+## Associations télécommande-moteur :
+Associez chaque bouton de la télécommande à une action spécifique sur les moteurs, comme l'activation/désactivation, la régulation de la vitesse, ou la modification de la direction.
+Dans votre code, déterminez quelle action doit être effectuée en fonction du code infrarouge reçu.
+
+## Contrôle des moteurs :
+Utilisez les broches de commande de votre L298N connectées à votre ESP8266 pour contrôler les moteurs en fonction des commandes infrarouges que vous avez associées.
+Par exemple, lorsque vous recevez une commande infrarouge spécifique, vous pouvez activer/désactiver les broches IN1 et IN2 pour contrôler la direction du moteur 1, et les broches IN3 et IN4 pour contrôler le moteur 2.
+Voici un exemple de code pour vous aider à démarrer avec la bibliothèque IRremoteESP8266 :
+
+```
+#include <IRremoteESP8266.h>
+#include <IRrecv.h>
+#include <IRutils.h>
+
+const int receiverPin = D2; // Broche du récepteur IR
+IRrecv irrecv(receiverPin);
+decode_results results;
+
+void setup() {
+  irrecv.enableIRIn(); // Initialise le récepteur IR
+  // Initialisez ici la configuration de votre L298N et de vos moteurs
+}
+
+void loop() {
+  if (irrecv.decode(&results)) {
+    // Traitez ici les commandes infrarouges reçues
+    // Par exemple, utilisez un switch/case pour associer les commandes aux actions des moteurs
+    switch (results.value) {
+      case 0xFFA25D: // Remplacez ce code par le code de la commande que vous voulez gérer
+        // Exécutez une action sur les moteurs en réponse à cette commande
+        break;
+      // Ajoutez d'autres cas pour d'autres commandes
+    }
+    irrecv.resume(); // Réactive le récepteur pour la prochaine commande
+  }
+}
+```
+
+N'oubliez pas de remplacer les codes de commande IR par ceux de votre télécommande. Vous pouvez utiliser la fonction irrecv.decode(&results) pour lire les codes IR reçus et les associer à des actions sur vos moteurs.
+
+
 # Je pilote deux moteurs courant continu avec un circuit L298N. Je voudrais mesurer la vitesse de rotation des moteurs.
 
 Pour mesurer la vitesse de rotation des moteurs à courant continu, l'une des méthodes les plus courantes consiste à utiliser des encodeurs. Les encodeurs sont des dispositifs qui transforment le mouvement rotatif ou la position en un signal électrique que vous pouvez lire.
