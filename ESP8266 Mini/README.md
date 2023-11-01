@@ -23,6 +23,10 @@
 ==========================================================================================
 ````
 
+# Pins ESP8266 NodeMCU v3
+
+![image](nodemcu-v3-pinout.png)
+
 
 # Code pour recevoir les signaux de IR
 
