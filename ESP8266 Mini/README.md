@@ -16,12 +16,12 @@
 #define pin 4  // D2 = GPIO4
 #define pin 5  // D1 = GPIO5
 
-#define pin 6  // SK = GPIO6
-#define pin 7  // S0 = GPIO7
-#define pin 8  // S1 = GPIO8
-#define pin 9  // S2 = GPIO9
-#define pin 10 // S3 = GPIO10
-#define pin 11 // SC = GPIO11
+#define pin 6  // SK = GPIO6       ESP8266 Nodemcu
+#define pin 7  // S0 = GPIO7       ESP8266 Nodemcu
+#define pin 8  // S1 = GPIO8       ESP8266 Nodemcu
+#define pin 9  // S2 = GPIO9       ESP8266 Nodemcu
+#define pin 10 // S3 = GPIO10      ESP8266 Nodemcu
+#define pin 11 // SC = GPIO11      ESP8266 Nodemcu
 
 #define pin 12 // D6 = GPIO12
 #define pin 13 // D7 = GPIO13
