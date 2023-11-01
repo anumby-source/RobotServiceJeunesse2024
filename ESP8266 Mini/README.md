@@ -10,16 +10,24 @@
 ````
 ==========================================================================================
 #define led LED_BUILTIN
-#define led 1 // TX = GPIO1
-#define led 2 // D4 = GPIO2
-#define led 3 // RX = GPIO3
-#define led 4 // D2 = GPIO4
-#define led 5 // D1 = GPIO5
-#define led 12 // D6 = GPIO12
-#define led 13 // D7 = GPIO13
-#define led 14 // D5 = GPIO14
-#define led 15 // D8 = GPIO15
-#define led 16 // D0 = GPIO16
+#define pin 1  // TX = GPIO1
+#define pin 2  // D4 = GPIO2
+#define pin 3  // RX = GPIO3
+#define pin 4  // D2 = GPIO4
+#define pin 5  // D1 = GPIO5
+
+#define pin 6  // SK = GPIO6
+#define pin 7  // S0 = GPIO7
+#define pin 8  // S1 = GPIO8
+#define pin 9  // S2 = GPIO9
+#define pin 10 // S3 = GPIO10
+#define pin 11 // SC = GPIO11
+
+#define pin 12 // D6 = GPIO12
+#define pin 13 // D7 = GPIO13
+#define pin 14 // D5 = GPIO14
+#define pin 15 // D8 = GPIO15
+#define pin 16 // D0 = GPIO16
 ==========================================================================================
 ````
 
