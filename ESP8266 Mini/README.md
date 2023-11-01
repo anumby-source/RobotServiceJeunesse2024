@@ -156,3 +156,10 @@ void loop() {
 }
 
 ````
+
+
+# Installer MicroPython sur ESP8266 NodeMcu
+
+* [Installer MicroPython sur ESP8266 NodeMcu](https://www.framboise314.fr/installer-micropython-sur-esp8266-esp12-nodemcu/)
+
+
