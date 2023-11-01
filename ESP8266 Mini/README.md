@@ -6,8 +6,8 @@
 
 # ESP8266 NodeMcu
 
-[ESP8266 NodeMcu](https://www.nodemcu.com/index_en.html#fr_54745c8bd775ef4b99000011)
-
+* [ESP8266 NodeMcu référence](https://www.nodemcu.com/index_en.html#fr_54745c8bd775ef4b99000011)
+* [ESP8266 NodeMcu wikipedia](https://en.wikipedia.org/wiki/NodeMCU)
 
 # Référence des pins des GPIO en C-Arduino
 

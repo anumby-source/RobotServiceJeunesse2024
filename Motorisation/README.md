@@ -1,6 +1,9 @@
 
 
-https://www.aranacorp.com/fr/utilisation-dun-module-l298n-avec-arduino/
+# docs motorisation
+
+* [doc motorisation](https://randomnerdtutorials.com/esp32-dc-motor-l298n-motor-driver-control-speed-direction/)
+* [L298N](https://www.aranacorp.com/fr/utilisation-dun-module-l298n-avec-arduino/)
 
 # comment puis-je réguler la vitesse relative des deux moteurs?
 
