@@ -53,21 +53,26 @@ const size_t n = sizeof(pins) / sizeof(int);
 
 const int ledPin = 2; 
 
+const int range = 1000;
+const int freq = 40000; // 100 .. 40000
+
 void setup() {  
+  analogWriteRange(range);
+  analogWriteFreq(freq);
 }
 
 void loop() {
   // increase the LED brightness
-  for(int dutyCycle = 0; dutyCycle < 255; dutyCycle++){   
+  for(int dutyCycle = 0; dutyCycle < range; dutyCycle++){   
     // changing the LED brightness with PWM
     analogWrite(ledPin, dutyCycle);
-    delay(50);
+    delay(5);
   }
 
   // decrease the LED brightness
-  for(int dutyCycle = 255; dutyCycle > 0; dutyCycle--){
+  for(int dutyCycle = range; dutyCycle > 0; dutyCycle--){
     // changing the LED brightness with PWM
     analogWrite(ledPin, dutyCycle);
-    delay(50);
+    delay(5);
   }
 }
