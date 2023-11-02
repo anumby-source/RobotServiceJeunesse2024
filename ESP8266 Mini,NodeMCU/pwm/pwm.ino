@@ -3,7 +3,7 @@
 //  référence: pinout description
 // https://github.com/anumby-source/RobotServiceJeunesse2024/tree/main/ESP8266%20Mini%2CNodeMCU#pins-esp8266-nodemcu-v3
 //
-//   les broches D1 .. D8 correspondent aux GPIO<n> qui peuvent être configurées au choix en INPUT ou OUTPUT
+//   les broches D1 .. D8 .. D12 correspondent aux GPIO<n> qui peuvent être configurées au choix en INPUT ou OUTPUT
 
 #define D0 16  // D0 = GPIO16
 
@@ -19,6 +19,11 @@
 #define D6 12  // D6 = GPIO12
 #define D7 13  // D7 = GPIO13
 #define D8 15  // D8 = GPIO15
+
+#define D9  3   // D9 = GPIO3
+#define D10 1   // D10 = GPIO1
+#define D11 9   // D11 = GPIO9
+#define D12 10  // D12 = GPI10
 
 #define RX 3   // RX = GPIO3
 #define TX 1   // TX = GPIO1
@@ -46,17 +51,23 @@
 int pins[] = {D1, D2, D3, D4, D5, D6, D7, D8};
 const size_t n = sizeof(pins) / sizeof(int);
 
-void setup() {
-  // Initialisation de la broche de la LED en sortie
-  for (int i = 0; i < n; i++) pinMode(pins[i], OUTPUT);
+const int ledPin = 2; 
+
+void setup() {  
 }
 
 void loop() {
-  // Allumer la LED
-  for (int i = 0; i < n; i++) digitalWrite(pins[i], HIGH);
-  delay(2000); // Attendre 1 seconde
+  // increase the LED brightness
+  for(int dutyCycle = 0; dutyCycle < 255; dutyCycle++){   
+    // changing the LED brightness with PWM
+    analogWrite(ledPin, dutyCycle);
+    delay(50);
+  }
 
-  // Éteindre la LED
-  for (int i = 0; i < n; i++) digitalWrite(pins[i], LOW);
-  delay(2000); // Attendre 1 seconde
+  // decrease the LED brightness
+  for(int dutyCycle = 255; dutyCycle > 0; dutyCycle--){
+    // changing the LED brightness with PWM
+    analogWrite(ledPin, dutyCycle);
+    delay(50);
+  }
 }
