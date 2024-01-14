@@ -8,7 +8,7 @@ Vérifier la version du "board système" de l'ESP32
 3) si la version 2.0.xxx est installée ===>  suprimer cette version
 4) installer la version 1.0.6
 
-![Conf ESP32 board IDE](Conf ESP32 board IDE .png)
+![Conf ESP32 board IDE]([Conf ESP32 board IDE .png](https://github.com/anumby-source/RobotServiceJeunesse2024/blob/main/ESP32-CAM/Conf%20ESP32%20board%20IDE%20.png))
 
 Puis vérifier que l'on sélectionne "AI Thinker ESP32-CAM"
 
