@@ -54,9 +54,11 @@ void setup() {
 void loop() {
   // Allumer la LED
   for (int i = 0; i < n; i++) digitalWrite(pins[i], HIGH);
-  delay(2000); // Attendre 1 seconde
+  int lighton = random(1, 100);
+  delay(lighton); // Attendre 1 seconde
 
   // Éteindre la LED
   for (int i = 0; i < n; i++) digitalWrite(pins[i], LOW);
-  delay(2000); // Attendre 1 seconde
+  int lightoff = random(1, 100);
+  delay(lightoff); // Attendre 1 seconde
 }
