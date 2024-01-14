@@ -18,12 +18,16 @@ Rappel:
 
 1) connecter le réseau
 
+```
 const char* ssid = "ESP32-CAM Access Point";
 const char* password = "123456789";
+```
 
 2) ouvrir un navigateur à l'adresse:
 
+```
 192.168.4.1
+```
 
 ![Control CAM](https://github.com/anumby-source/RobotServiceJeunesse2024/blob/main/ESP32-CAM/ControlCAM.png)
 
