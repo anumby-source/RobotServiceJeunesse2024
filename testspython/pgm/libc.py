@@ -1,0 +1,3 @@
+
+def fc():
+    print("fc")

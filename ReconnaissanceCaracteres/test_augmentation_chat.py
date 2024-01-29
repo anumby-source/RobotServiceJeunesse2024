@@ -39,23 +39,63 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchvision import datasets, transforms
+from torchvision import datasets
+from torchvision.transforms import v2
 from torch.utils.data import DataLoader
+import numpy as np
+import matplotlib.pyplot as plt
+import sys, os
+from PIL import Image
 
-# Définir la transformation des données
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,))
-])
+sys.path.append('../fidle')
+import fidle.pwk as ooo
 
-# Télécharger les données MNIST
-train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
-test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+def get_data():
+    # Définir des transformations d'augmentation des données
+    r = 45
+    t = v2.Compose([
+        v2.RandomRotation(r),                                                    # Rotation aléatoire dans la plage de -r à r degrés
+        # v2.RandomAffine(0, translate=(0.1, 0.1)),                              # Translation aléatoire
+        # v2.RandomHorizontalFlip(),                                             # Retournement horizontal aléatoire
+        # v2.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2), # Ajustements aléatoires de la couleur
+        # v2.ToTensor(),
+        v2.ToImage(),
+        v2.ToDtype(torch.float32, scale=True),
+        v2.Normalize((0.5,), (0.5,))
+    ])
+
+    # Télécharger les données MNIST
+    train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=t)
+    test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=t)
+
+    x_train = train_dataset.data.type(torch.DoubleTensor)
+    y_train = train_dataset.targets
+    x_test = test_dataset.data.type(torch.DoubleTensor)
+    y_test = test_dataset.targets
+
+    np_x_train = x_train.numpy().astype(np.float64)
+    np_y_train = y_train.numpy().astype(np.uint8)
+
+    # display some images from the train set
+    # ooo.plot_images(np_x_train, np_y_train, [27], x_size=5, y_size=5, colorbar=True)
+    start = 0
+    rows = 6
+    columns = 12
+    # ooo.plot_images(np_x_train, np_y_train, range(start, start + rows*columns), columns=columns)
+
+    return train_dataset, test_dataset
+
+train_dataset, test_dataset = get_data()
+
+# exit()
 
 # Définir les chargeurs de données
 batch_size = 64
 train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+
+
+exit()
 
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1):
@@ -127,7 +167,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Entraîner le modèle
-epochs = 20
+epochs = 5
 
 for epoch in range(epochs):
     for batch_idx, (data, target) in enumerate(train_loader):

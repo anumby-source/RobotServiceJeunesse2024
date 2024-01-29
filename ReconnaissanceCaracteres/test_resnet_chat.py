@@ -41,6 +41,13 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+import numpy as np
+import matplotlib.pyplot as plt
+import sys, os
+
+sys.path.append('../fidle')
+import fidle.pwk as ooo
+
 
 # Définir la transformation des données
 transform = transforms.Compose([
@@ -48,31 +55,32 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-# Télécharger les données MNIST
-train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
-test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+def get_data():
+    # Télécharger les données MNIST
+    train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+    test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+
+    x_train=train_dataset.data.type(torch.DoubleTensor)
+    y_train=train_dataset.targets
+    x_test=test_dataset.data.type(torch.DoubleTensor)
+    y_test=test_dataset.targets
+
+    np_x_train=x_train.numpy().astype(np.float64)
+    np_y_train=y_train.numpy().astype(np.uint8)
+
+    # display some images from the train set
+    ooo.plot_images(np_x_train,np_y_train , [27],  x_size=5,y_size=5, colorbar=True)
+    ooo.plot_images(np_x_train,np_y_train, range(5,41), columns=12)
+
+    return train_dataset, test_dataset
+
+train_dataset, test_dataset = get_data()
+
+exit()
 
 # Définir les chargeurs de données
 batch_size = 64
-
-# Définir des transformations d'augmentation des données
-transform = transforms.Compose([
-    transforms.RandomRotation(10),          # Rotation aléatoire dans la plage de -10 à 10 degrés
-    transforms.RandomAffine(0, translate=(0.1, 0.1)),  # Translation aléatoire
-    transforms.RandomHorizontalFlip(),      # Retournement horizontal aléatoire
-    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),  # Ajustements aléatoires de la couleur
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,))
-])
-
-# Télécharger les données MNIST avec les transformations d'augmentation
-train_dataset_augmented = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
-
-# Utiliser un DataLoader pour charger les données augmentées
-train_loader_augmented = torch.utils.data.DataLoader(dataset=train_dataset_augmented, batch_size=batch_size, shuffle=True)
-# train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
-train_loader = train_loader_augmented
-
+train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
 class ResidualBlock(nn.Module):

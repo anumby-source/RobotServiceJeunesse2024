@@ -9,8 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys, os
 
-sys.path.append('../fidle')
-sys.path.append('.')
+sys.path.append('../FidleModule')
 import fidle.pwk as ooo
 
 # from fidle_pwk_additional import convergence_history_CrossEntropyLoss
@@ -131,9 +130,10 @@ np_x_train=x_train.numpy().astype(np.float64)
 np_y_train=y_train.numpy().astype(np.uint8)
 
 # display some images from the train set
-# ooo.plot_images(np_x_train,np_y_train , [27],  x_size=5,y_size=5, colorbar=True)
-# ooo.plot_images(np_x_train,np_y_train, range(5,41), columns=12)
+ooo.plot_images(np_x_train,np_y_train , [27],  x_size=5,y_size=5, colorbar=True)
+ooo.plot_images(np_x_train,np_y_train, range(5,41), columns=12)
 
+exit()
 
 class MyModel(nn.Module):
     """
