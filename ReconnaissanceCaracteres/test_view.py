@@ -9,19 +9,21 @@ import sys
 sys.path.append('models')
 sys.path.append('data')
 
-import mnist
+# import mnist
+import mnist_inception
+# import mnist_dense_net
 
-import resnet
-import simplecnn
-import multicnn
+# import simplecnn
+# import multicnn
+# import resnet
 import inception
-import densenet
+# import densenet
 
 # Instancier le modèle
 
-# model = resnet.ResNet(resnet.ResidualBlock, [2, 2, 2])  # Resnet
 # model = simplecnn.MyModel()                           # simple CNN
 # model = multicnn.CNN()                                # CNN multi
+# model = resnet.ResNet(resnet.ResidualBlock, [2, 2, 2])  # Resnet
 model = inception.InceptionModel()                    # Inception
 # model = densenet.DenseNetModel()
 
@@ -38,7 +40,9 @@ all_labels = []
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-train_loader, test_loader = mnist.get_data_dense_net()
+# train_loader, test_loader = mnist.get_data()
+train_loader, test_loader = mnist_inception.get_data_inception()
+# train_loader, test_loader = mnist_dense_net.get_data_dense_net()
 
 for epoch in range(epochs):
     model.train()
