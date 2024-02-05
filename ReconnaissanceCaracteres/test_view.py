@@ -32,7 +32,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Entraîner le modèle et enregistrer les valeurs de perte
-epochs = 10
+epochs = 1
 loss_values = []
 all_preds = []
 all_labels = []
@@ -59,6 +59,7 @@ for epoch in range(epochs):
             print(f'Epoch {epoch+1}/{epochs}, Batch {batch_idx}/{len(train_loader)}, Loss: {loss.item()}')
 
         loss_values.append(loss.item())
+        break
 
     # Évaluer le modèle sur le jeu de test et enregistrer les prédictions et les étiquettes
     model.eval()
@@ -67,7 +68,7 @@ for epoch in range(epochs):
 
     with torch.no_grad():
         for data, target in test_loader:
-            data, target = data.to(device), target.to(device)
+            # data, target = data.to(device), target.to(device)
             output = model(data)
             _, predicted = torch.max(output.data, 1)
 
