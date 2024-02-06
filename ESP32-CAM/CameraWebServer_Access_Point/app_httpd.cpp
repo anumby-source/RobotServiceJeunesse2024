@@ -217,7 +217,7 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
 
 static esp_err_t capture_handler(httpd_req_t *req){
     if (flashCondition == false){
-        return
+        return 0;
     }
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
