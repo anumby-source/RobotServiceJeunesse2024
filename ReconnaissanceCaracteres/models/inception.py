@@ -15,3 +15,5 @@ class InceptionModel(Inception3):
         self.inception = models.inception_v3(weights=Inception_V3_Weights.DEFAULT)
         in_features = self.inception.fc.in_features
         self.inception.fc = nn.Linear(in_features, num_classes)
+
+

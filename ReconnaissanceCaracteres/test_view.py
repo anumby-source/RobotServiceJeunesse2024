@@ -32,7 +32,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Entraîner le modèle et enregistrer les valeurs de perte
-epochs = 1
+epochs = 50
 loss_values = []
 all_preds = []
 all_labels = []
@@ -51,7 +51,8 @@ for epoch in range(epochs):
         optimizer.zero_grad()
         output = model(data)
 
-        loss = criterion(output, target)
+        loss = criterion(output.logits, target)
+        # loss = criterion(output, target)
         loss.backward()
         optimizer.step()
 
