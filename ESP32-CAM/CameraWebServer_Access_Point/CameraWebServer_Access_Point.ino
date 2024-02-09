@@ -26,6 +26,8 @@
 const char* ssid = "ESP32-CAM Access Point";
 const char* password = "123456789";
 
+bool flashCondition = false;
+
 void startCameraServer();
 
 const int flashPin = 4;
@@ -113,7 +115,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   //delay(10000);
   digitalWrite(flashPin, HIGH);
+  flashCondition = true;
   delay(10);
   digitalWrite(flashPin, LOW);
+  flashCondition = false;
   delay(5000);
 }
