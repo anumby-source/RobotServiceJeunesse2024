@@ -1,53 +1,18 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
-from torchvision.transforms import v2
-from torch.utils.data import DataLoader, Dataset
-from PIL import Image
-import os
+from torch.utils.data import DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+
 import sys
 sys.path.append('../ReconnaissanceCaracteres/models')
+sys.path.append('datasets')
 
-import resnet
-
-# Créer un Dataset personnalisé
-class CustomDataset(Dataset):
-    def __init__(self, images, image_folder, transform=None):
-        self.image_folder = image_folder
-        self.n = int(images/8)
-        self.image_paths = [os.path.join(image_folder, "image{:02d}.jpg").format(i % 8 + 1) for i in range(8 * self.n)]
-        self.labels = [i % 8 + 1 for i in range(8 * self.n)]
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.image_paths)
-
-    def __getitem__(self, idx):
-        image_path = self.image_paths[idx]
-        image = Image.open(image_path).convert('L')  # Convertir en niveaux de gris
-        if self.transform:
-            image = self.transform(image)
-        label = self.labels[idx]
-        return image, label
-
-# Transformer pour l'augmentation des données
-data_transform = v2.Compose([
-    v2.Pad(padding=100, fill=(255,)),
-    # Rotation aléatoire avec remplissage de pixels blancs    v2.Resize((100, 100)),
-    v2.RandomRotation(30, fill=255),
-    v2.RandomAffine(degrees=0, translate=(0.1, 0.1), scale=(0.9, 1.1), fill=255),
-    v2.RandomPerspective(fill=255),
-    v2.RandomPhotometricDistort(),
-    v2.GaussianBlur(kernel_size=9),
-    v2.Compose([v2.ToImage(), v2.ToDtype(torch.float32, scale=True)])
-])
+import custom
 
 # Créer un dataset augmenté avec N images
-N = 100000
-dataset = CustomDataset(images=N, image_folder="data", transform=data_transform)
+N = 1250*8
+dataset = custom.CustomDataset(images=N, image_folder="data", transform=custom.data_transform)
 print(dataset.__len__())
 
 # Créer une fonction pour afficher les données
@@ -64,9 +29,6 @@ def show_images_with_labels(dataset, num_images=20):
     plt.show()
 
 show_images_with_labels(dataset)
-
-# Sauvegarder le dataset augmenté
-# torch.save(dataset, f"dataset/images_{dataset.__len__()}.pt")
 
 # Diviser le dataset en parties d'entraînement et de test
 train_dataset, test_dataset = train_test_split(dataset, test_size=0.2, random_state=42)

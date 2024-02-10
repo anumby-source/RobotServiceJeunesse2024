@@ -1,3 +1,5 @@
 .idea/
 ~*
 MasterMind/data/
+__pycache__
+
