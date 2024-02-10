@@ -15,7 +15,7 @@ import custom
 dataset = custom.CustomDataset(images=config.N, image_folder="data", transform=custom.data_transform)
 print(dataset.__len__())
 
-# Créer une fonction pour afficher les données
+# Créer une fonction pour afficher les données avec leur label
 def show_images_with_labels(dataset, num_images=20):
     # Créer une grille pour afficher les images
     fig, axs = plt.subplots(4, 5, figsize=(15, 10))
@@ -30,7 +30,7 @@ def show_images_with_labels(dataset, num_images=20):
 
 show_images_with_labels(dataset)
 
-# Diviser le dataset en parties d'entraînement et de test
+# Diviser le dataset en parties d'entraînement 80% et de test 20%
 train_dataset, test_dataset = train_test_split(dataset, test_size=0.2, random_state=42)
 torch.save(train_dataset, f"dataset/train_{dataset.__len__()}.pt")
 torch.save(test_dataset, f"dataset/test_{dataset.__len__()}.pt")

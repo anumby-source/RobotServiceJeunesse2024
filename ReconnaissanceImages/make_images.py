@@ -10,9 +10,11 @@ sys.path.append('datasets')
 
 import config
 
-# Charger et redimensionner une image en une taille carrée de image_sizeximage_size pixels
+# Charger et redimensionner une image en une taille carrée de image_size x image_size pixels
+# Passage en niveau de gris
+# filtrage des images pour s'approcher du noir et blanc
+# sauvegarder l'image sous le nom image<nn>.jpg
 def resize_and_save_image(image_path, output_folder):
-    # image = Image.open(image_path).convert('L')  # Convertir en niveaux de gris
     image_cv = cv2.imread(image_path)
 
     # Convertir l'image en niveaux de gris
@@ -40,11 +42,10 @@ def resize_and_save_image(image_path, output_folder):
     return image, resized_image
 
 
-# Exemple d'utilisation
 image_folder = "data"
 output_folder = "data"
 
-# Liste des chemins d'accès aux images d'origine
+# Liste des chemins d'accès aux images d'origine <nn>.jpg -> image<nn>.jpg
 image_paths = [os.path.join(image_folder, f"{i:02d}.jpg") for i in range(1, 9)]
 
 # Créer le dossier de sortie s'il n'existe pas déjà

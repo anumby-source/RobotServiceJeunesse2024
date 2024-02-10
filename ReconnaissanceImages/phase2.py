@@ -15,6 +15,7 @@ sys.path.append('datasets')
 import resnet
 import config
 
+# chargement des datasets
 train_dataset = torch.load(f"dataset/train_{config.N}.pt")
 test_dataset = torch.load(f"dataset/test_{config.N}.pt")
 
@@ -24,24 +25,14 @@ print(train_dataset.__len__(), test_dataset.__len__())
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 
-# Exemple d'utilisation : itérer sur les données d'entraînement
-for images, labels in train_loader:
-    # Les images sont dans le format [batch_size, channels, height, width]
-    # Les labels sont dans le format [batch_size]
-    # Par exemple, pour accéder au premier lot d'images et de labels :
-    first_batch_images = images
-    first_batch_labels = labels
-    print(first_batch_images.shape)  # Afficher la forme des images
-    print(first_batch_labels.shape)  # Afficher la forme des labels
-    break  # Quitter la boucle après le premier lot
-
+# Création du modèle choisi
 model = resnet.ResNet(resnet.ResidualBlock, [2, 2, 2])  # Resnet
 
 # Définir la fonction de coût et l'optimiseur
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# Entraîner le modèle et enregistrer les valeurs de perte
+# Entraîner le modèle et enregistrer les valeurs de perte pour visualisation ultérieure
 epochs = config.epochs
 loss_values = []
 all_preds = []
