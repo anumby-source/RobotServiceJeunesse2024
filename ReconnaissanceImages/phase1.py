@@ -32,8 +32,8 @@ show_images_with_labels(dataset)
 
 # Diviser le dataset en parties d'entraînement 80% et de test 20%
 train_dataset, test_dataset = train_test_split(dataset, test_size=0.2, random_state=42)
-torch.save(train_dataset, f"dataset/train_{dataset.__len__()}.pt")
-torch.save(test_dataset, f"dataset/test_{dataset.__len__()}.pt")
+torch.save(train_dataset, f"dataset/train_{config.version}_{dataset.__len__()}.pt")
+torch.save(test_dataset, f"dataset/test_{config.version}_{dataset.__len__()}.pt")
 
 print("train", train_dataset.__len__(), "test", test_dataset.__len__())
 

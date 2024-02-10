@@ -15,8 +15,8 @@ import resnet
 import config
 
 # chargement des datasets
-train_dataset = torch.load(f"dataset/train_{config.N}.pt")
-test_dataset = torch.load(f"dataset/test_{config.N}.pt")
+train_dataset = torch.load(f"dataset/train_{config.version}_{config.N}.pt")
+test_dataset = torch.load(f"dataset/test_{config.version}_{config.N}.pt")
 
 print(train_dataset.__len__(), test_dataset.__len__())
 
@@ -81,7 +81,7 @@ for epoch in range(epochs):
     all_labels.extend(labels)
 
 # sauvegarde des paramètres du modèle entraîné
-torch.save(model.state_dict(), f'images{config.N}.pth')
+torch.save(model.state_dict(), f'parameters/images_{config.version}-{config.N}-{config.epochs}.pth')
 
 def show_loss(loss_values):
     # Visualiser graphiquement la valeur de la perte
