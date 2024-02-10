@@ -9,4 +9,4 @@ padding = 25
 N = 1250*8
 
 # Epoques pur l'entraînement
-epochs = 20
+epochs = 50

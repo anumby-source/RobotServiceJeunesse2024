@@ -2,11 +2,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-import os
-import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
+import time
 
 import sys
 sys.path.append('../ReconnaissanceCaracteres/models')
@@ -41,6 +40,8 @@ all_labels = []
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
+t0 = time.time()
+
 for epoch in range(epochs):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
@@ -53,7 +54,12 @@ for epoch in range(epochs):
         optimizer.step()
 
         if batch_idx % 100 == 0:
-            print(f'Epoch {epoch+1}/{epochs}, Batch {batch_idx}/{len(train_loader)}, Loss: {loss.item()}')
+            t = time.time() - t0
+            secondes = int(t) % 60
+            minutes = int(int(t)/60) % 60
+            heures = int(int(t)/3600) % 24
+
+            print(f'{heures}h{minutes}m{secondes}s> Epoch {epoch+1}/{epochs}, Batch {batch_idx}/{len(train_loader)}, Loss: {loss.item()}')
 
         loss_values.append(loss.item())
 
@@ -73,6 +79,9 @@ for epoch in range(epochs):
 
     all_preds.extend(preds)
     all_labels.extend(labels)
+
+# sauvegarde des paramètres du modèle entraîné
+torch.save(model.state_dict(), f'images{config.N}.pth')
 
 def show_loss(loss_values):
     # Visualiser graphiquement la valeur de la perte
