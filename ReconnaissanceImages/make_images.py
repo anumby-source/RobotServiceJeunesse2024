@@ -4,11 +4,13 @@ from PIL import Image
 import os
 import matplotlib.pyplot as plt
 import cv2
+import sys
 
+sys.path.append('datasets')
 
-size = 200
+import config
 
-# Charger et redimensionner une image en une taille carrée de sizexsize pixels
+# Charger et redimensionner une image en une taille carrée de image_sizeximage_size pixels
 def resize_and_save_image(image_path, output_folder):
     # image = Image.open(image_path).convert('L')  # Convertir en niveaux de gris
     image_cv = cv2.imread(image_path)
@@ -27,8 +29,8 @@ def resize_and_save_image(image_path, output_folder):
     new_name = f"image{image_number}.jpg"
 
     transform = transforms.Compose([
-        transforms.Resize((size, size)),  # Redimensionner à sizexsize pixels
-        transforms.CenterCrop((size, size)),  # Recadrer au centre pour obtenir une image carrée
+        transforms.Resize((config.image_size, config.image_size)),  # Redimensionner à config.image_sizexconfig.image_size pixels
+        transforms.CenterCrop((config.image_size, config.image_size)),  # Recadrer au centre pour obtenir une image carrée
     ])
     resized_image = transform(image)
 

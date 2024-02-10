@@ -10,13 +10,13 @@ import seaborn as sns
 
 import sys
 sys.path.append('../ReconnaissanceCaracteres/models')
-sys.path.append('../datasets')
+sys.path.append('datasets')
 
 import resnet
+import config
 
-n = 10000
-train_dataset = torch.load(f"dataset/train_{n}.pt")
-test_dataset = torch.load(f"dataset/test_{n}.pt")
+train_dataset = torch.load(f"dataset/train_{config.N}.pt")
+test_dataset = torch.load(f"dataset/test_{config.N}.pt")
 
 print(train_dataset.__len__(), test_dataset.__len__())
 
@@ -42,7 +42,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Entraîner le modèle et enregistrer les valeurs de perte
-epochs = 10
+epochs = config.epochs
 loss_values = []
 all_preds = []
 all_labels = []

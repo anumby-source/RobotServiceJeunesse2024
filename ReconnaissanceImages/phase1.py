@@ -8,11 +8,11 @@ import sys
 sys.path.append('../ReconnaissanceCaracteres/models')
 sys.path.append('datasets')
 
+import config
 import custom
 
 # Créer un dataset augmenté avec N images
-N = 1250*8
-dataset = custom.CustomDataset(images=N, image_folder="data", transform=custom.data_transform)
+dataset = custom.CustomDataset(images=config.N, image_folder="data", transform=custom.data_transform)
 print(dataset.__len__())
 
 # Créer une fonction pour afficher les données

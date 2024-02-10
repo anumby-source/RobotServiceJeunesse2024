@@ -4,6 +4,8 @@ import os
 from torchvision.transforms import v2
 import torch
 
+import config
+
 # Créer un Dataset personnalisé
 class CustomDataset(Dataset):
     def __init__(self, images, image_folder, transform=None):
@@ -28,7 +30,7 @@ class CustomDataset(Dataset):
 
 # Transformer pour l'augmentation des données
 data_transform = v2.Compose([
-    v2.Pad(padding=100, fill=(255,)),
+    v2.Pad(padding=config.padding, fill=(255,)),
     # Rotation aléatoire avec remplissage de pixels blancs    v2.Resize((100, 100)),
     v2.RandomRotation(30, fill=255),
     v2.RandomAffine(degrees=0, translate=(0.1, 0.1), scale=(0.9, 1.1), fill=255),
