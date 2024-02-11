@@ -31,6 +31,7 @@ bool flashCondition = false;
 void startCameraServer();
 
 const int flashPin = 4;
+const int ActiCam = 2;
 
 void setup() {
   Serial.begin(115200);
@@ -39,6 +40,7 @@ void setup() {
 
   pinMode(flashPin, OUTPUT);
   digitalWrite(flashPin, LOW);
+  pinMode(ActiCam, INPUT);
 
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
@@ -114,10 +116,14 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   //delay(10000);
-  digitalWrite(flashPin, HIGH);
-  flashCondition = true;
-  delay(10);
-  digitalWrite(flashPin, LOW);
-  flashCondition = false;
-  delay(5000);
+  bool statCam = digitalRead(ActiCam);
+
+  if (statCam == HIGH){
+    digitalWrite(flashPin, HIGH);
+    flashCondition = true;
+    delay(10);
+  }else{
+    digitalWrite(flashPin, LOW);
+    flashCondition = false;
+  }
 }
