@@ -1,5 +1,5 @@
 # version de la configuration
-version = 2
+version = 3
 
 # Taille des images qui serviront à entraîner le modèle
 image_size = 50
