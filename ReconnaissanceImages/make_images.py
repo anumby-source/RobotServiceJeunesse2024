@@ -10,11 +10,15 @@ sys.path.append('datasets')
 
 import config
 
+print("config.version=", config.version)
+
+if not os.path.exists(config.image_folder): os.makedirs(config.image_folder)
+
 # Charger et redimensionner une image en une taille carrée de image_size x image_size pixels
 # Passage en niveau de gris
 # filtrage des images pour s'approcher du noir et blanc
 # sauvegarder l'image sous le nom image<nn>.jpg
-def resize_and_save_image(image_path, output_folder):
+def normalize_and_save_image(image_path, output_folder):
     image_cv = cv2.imread(image_path)
 
     # Convertir l'image en niveaux de gris
@@ -34,33 +38,24 @@ def resize_and_save_image(image_path, output_folder):
         transforms.Resize((config.image_size, config.image_size)),  # Redimensionner à config.image_sizexconfig.image_size pixels
         transforms.CenterCrop((config.image_size, config.image_size)),  # Recadrer au centre pour obtenir une image carrée
     ])
-    resized_image = transform(image)
+    normalized_image = transform(image)
 
     # Sauvegarder l'image transformée
-    resized_image.save(os.path.join(output_folder, new_name))
+    normalized_image.save(f'{config.image_folder}/{new_name}')
 
-    return image, resized_image
-
-
-image_folder = "data"
-output_folder = "data"
-
-# Liste des chemins d'accès aux images d'origine <nn>.jpg -> image<nn>.jpg
-image_paths = [os.path.join(image_folder, f"{i:02d}.jpg") for i in range(1, 9)]
-
-# Créer le dossier de sortie s'il n'existe pas déjà
-os.makedirs(output_folder, exist_ok=True)
+    return image, normalized_image
 
 # Visualiser les images avant et après la transformation et sauvegarder les images transformées
-fig, axs = plt.subplots(2, len(image_paths), figsize=(20, 5))
+fig, axs = plt.subplots(2, len(config.original_image_paths), figsize=(20, 5))
 
-for i, image_path in enumerate(image_paths):
-    original_image, resized_image = resize_and_save_image(image_path, output_folder)
+for i, image_path in enumerate(config.original_image_paths):
+    original_image, normalized_image = normalize_and_save_image(image_path, config.image_folder)
     axs[0, i].imshow(original_image, cmap='gray')
     axs[0, i].set_title('Avant')
     axs[0, i].axis('off')
-    axs[1, i].imshow(resized_image, cmap='gray')
+    axs[1, i].imshow(normalized_image, cmap='gray')
     axs[1, i].set_title('Après')
     axs[1, i].axis('off')
 
-plt.show()
+# plt.show()
+plt.savefig(f'{config.image_folder}/images.jpg')

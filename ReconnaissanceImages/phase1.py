@@ -8,12 +8,16 @@ import sys
 sys.path.append('../ReconnaissanceCaracteres/models')
 sys.path.append('datasets')
 
+import os
+
 import config
 import custom
 
+print("config.version=", config.version, "set=", config.image_path)
+
 # Créer un dataset augmenté avec N images
-dataset = custom.CustomDataset(images=config.N, image_folder="data", transform=custom.data_transform)
-print(dataset.__len__())
+dataset = custom.CustomDataset(images=config.N, image_folder=f"{config.image_folder}", transform=custom.data_transform)
+print("Size of dataset=", dataset.__len__())
 
 # Créer une fonction pour afficher les données avec leur label
 def show_images_with_labels(dataset, num_images=20):
@@ -26,16 +30,19 @@ def show_images_with_labels(dataset, num_images=20):
         ax.imshow(image.squeeze(), cmap='gray')
         ax.set_title(f"Label: {label}")  # Ajouter le label comme titre de l'image
         ax.axis('off')
-    plt.show()
+    # plt.show()
+    plt.savefig(f'{config.image_folder}/images_augmented.jpg')
 
 show_images_with_labels(dataset)
 
+if not os.path.exists(config.train_folder): os.makedirs(config.train_folder)
+
 # Diviser le dataset en parties d'entraînement 80% et de test 20%
 train_dataset, test_dataset = train_test_split(dataset, test_size=0.2, random_state=42)
-torch.save(train_dataset, f"dataset/train_{config.version}_{dataset.__len__()}.pt")
-torch.save(test_dataset, f"dataset/test_{config.version}_{dataset.__len__()}.pt")
+torch.save(train_dataset, config.train_path)
+torch.save(test_dataset, config.test_path)
 
-print("train", train_dataset.__len__(), "test", test_dataset.__len__())
+print("train=", train_dataset.__len__(), "test=", test_dataset.__len__())
 
 # Créer des DataLoader pour charger les données en lots
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)

@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import time
+import os
 
 import sys
 sys.path.append('../ReconnaissanceCaracteres/models')
@@ -14,11 +15,14 @@ sys.path.append('datasets')
 import resnet
 import config
 
-# chargement des datasets
-train_dataset = torch.load(f"dataset/train_{config.version}_{config.N}.pt")
-test_dataset = torch.load(f"dataset/test_{config.version}_{config.N}.pt")
+print("config.version=", config.version, "set=", config.image_path)
 
-print(train_dataset.__len__(), test_dataset.__len__())
+# chargement des datasets
+
+train_dataset = torch.load(f"{config.train_path}")
+test_dataset = torch.load(f"{config.test_path}")
+
+print("train=", train_dataset.__len__(), "test=", test_dataset.__len__())
 
 # Créer des DataLoader pour charger les données en lots
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
@@ -81,7 +85,11 @@ for epoch in range(epochs):
     all_labels.extend(labels)
 
 # sauvegarde des paramètres du modèle entraîné
-torch.save(model.state_dict(), f'parameters/images_{config.version}-{config.N}-{config.epochs}.pth')
+if not os.path.exists(config.parameters_folder): os.makedirs(config.parameters_folder)
+
+torch.save(model.state_dict(), config.parameters_path)
+
+if not os.path.exists(config.result_folder): os.makedirs(config.result_folder)
 
 def show_loss(loss_values):
     # Visualiser graphiquement la valeur de la perte
@@ -89,7 +97,8 @@ def show_loss(loss_values):
     plt.title('Training Loss Over Batches')
     plt.xlabel('Batch Index')
     plt.ylabel('Loss')
-    plt.show()
+    # plt.show()
+    plt.savefig(config.loss_path)
 
 show_loss(loss_values)
 
@@ -101,9 +110,10 @@ def plot_confusion_matrix(y_true, y_pred, classes):
     plt.title('Confusion Matrix')
     plt.xlabel('Predicted')
     plt.ylabel('True')
-    plt.show()
+    # plt.show()
+    plt.savefig(config.confusion_path)
 
 # Afficher la matrice de confusion
-class_names = [str(i) for i in range(10)]  # Les classes MNIST sont les chiffres de 0 à 9
+class_names = [str(i) for i in range(1, 9)]  # Les classes MNIST sont les chiffres de 1 à 9
 plot_confusion_matrix(all_labels, all_preds, classes=class_names)
 
