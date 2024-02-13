@@ -2,7 +2,7 @@
 image_path = "numbers"
 
 # version de la configuration
-version = 8
+version = 9
 
 # Taille des images qui serviront à entraîner le modèle
 image_size = 50
@@ -14,7 +14,7 @@ padding = 25
 N = 1250*5*8
 
 # Epoques pur l'entraînement
-epochs = 5
+epochs = 50
 
 image_folder = f"data/{image_path}"
 original_image_paths = [f"{image_folder}/{i:02d}.jpg" for i in range(1, 9)]
