@@ -1,8 +1,8 @@
 # dossier des images
-image_path = "numbers"
+image_path = "letters"
 
 # version de la configuration
-version = 9
+version = 10
 
 # Taille des images qui serviront à entraîner le modèle
 image_size = 50
@@ -11,7 +11,7 @@ image_size = 50
 padding = 25
 
 # Taille du dataset
-N = 1250*5*8
+N = 1250*10*8
 
 # Epoques pur l'entraînement
 epochs = 50
