@@ -1,8 +1,8 @@
 # dossier des images
-image_path = "letters"
+image_path = "numbers"
 
 # version de la configuration
-version = 10
+version = 8
 
 # Taille des images qui serviront à entraîner le modèle
 image_size = 50
@@ -11,10 +11,10 @@ image_size = 50
 padding = 25
 
 # Taille du dataset
-N = 1250*10*8
+N = 1250*5*8
 
 # Epoques pur l'entraînement
-epochs = 50
+epochs = 5
 
 image_folder = f"data/{image_path}"
 original_image_paths = [f"{image_folder}/{i:02d}.jpg" for i in range(1, 9)]

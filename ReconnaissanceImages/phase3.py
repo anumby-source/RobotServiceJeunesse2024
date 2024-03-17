@@ -12,11 +12,12 @@ import resnet
 import config
 
 # Création du modèle choisi
-# model = resnet.ResNet(resnet.ResidualBlock, [2, 2, 2])  # Resnet
+model = resnet.ResNet(resnet.ResidualBlock, [2, 2, 2])  # Resnet
 
 # Charger le modèle pré-entraîné
-# model.load_state_dict(torch.load(f'parameters/images_{config.version}-{config.N}-{config.epochs}.pth'))
-# model.eval()
+print(config.parameters_path)
+model.load_state_dict(torch.load(f'{config.parameters_path}'))
+model.eval()
 
 size = config.image_size*5
 # Définir une transformation pour adapter l'image capturée au format d'entrée du modèle
@@ -50,33 +51,35 @@ while True:
     # image = Image.fromarray(thresholded_image)
     image = thresholded_image
 
-    # Visualiser l'image capturée avant la transformation
-    plt.figure(figsize=(16, 4))
-    plt.subplot(1, 4, 1)
-    plt.imshow(image_cv)
-    plt.title('Image capturée')
-    plt.axis('off')
-
-    plt.subplot(1, 4, 2)
-    plt.imshow(gray_image)
-    plt.title('Image grise')
-    plt.axis('off')
-
-    plt.subplot(1, 4, 3)
-    plt.imshow(image, cmap='gray')
-    plt.title('Image capturée (avant transformation)')
-    plt.axis('off')
-
     # Appliquer la transformation
     input_image = transform(image).unsqueeze(0)    # Ajouter une dimension pour le batch
 
+    """
     # Visualiser l'image après la transformation
-    plt.subplot(1, 4, 4)
+    # plt.subplot(1, 4, 4)
     plt.imshow(input_image.squeeze().numpy(), cmap='gray')
     plt.title('Image transformée (après transformation)')
     plt.axis('off')
 
     plt.show()
+    """
+
+    # Afficher l'image
+    cv2.imshow('Captured Image', image)
+
+    # Attendre un certain délai entre chaque image (en millisecondes)
+    cv2.waitKey(1000)  # Attendre 1 seconde (1000 millisecondes)
+
+    # Quitter la boucle si la touche 'q' est pressée
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+    with torch.no_grad():
+        output = model(input_image)
+    # Obtenir l'indice de la classe prédite
+    _, predicted_class = torch.max(output, 1)
+
+    print("Predicted class:", predicted_class.item())
 
 exit()
 
