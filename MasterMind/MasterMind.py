@@ -2,6 +2,7 @@ import random
 import cv2
 import numpy as np
 import easyocr
+import requests
 
 N = 8
 P = 4
@@ -20,8 +21,14 @@ class OCR:
         ret, frame = cap.read()
         return frame
 
+    def esp32cam(self):
+        r = requests.get("http://192.168.4.1:80/capture")
+        image = np.asarray(bytearray(r.content), dtype=np.uint8)
+        return cv2.imdecode(image, cv2.IMREAD_COLOR)
+
     def read(self):
         frame = self.internal_camera()
+        # frame = self.esp32cam()
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         return self.reader.readtext(frame)
