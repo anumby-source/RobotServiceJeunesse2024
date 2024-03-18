@@ -72,6 +72,9 @@ class MastermindCV:
         # Dessiner l'IHM
         self.draw_ihm()
 
+    def jeu_courant(self):
+        return self.jeux[self.lignes - 1]
+
     def result(self):
         """
         analyse la combinaison choisie 
@@ -79,7 +82,7 @@ class MastermindCV:
         exact = 0
         exists = 0
         off = 0
-        jeu = self.jeux[self.lignes - 1]
+        jeu = self.jeu_courant()
         for p in range(P):
             k = jeu.jeu[p]
             if k == self.secret[p]:
@@ -123,8 +126,7 @@ class MastermindCV:
         y = 0
 
         # on affiche successivement toutes les tentatives de combinaisons
-        for ligne in range(self.lignes):
-            jeu = self.jeux[ligne]
+        for ligne, jeu in enumerate(self.jeux):
 
             x1 = padding
             y1 = y + padding
@@ -181,7 +183,7 @@ class MastermindCV:
 
         result = self.ocr.read()
 
-        jeu = self.jeux[self.lignes - 1]
+        jeu = self.jeu_courant()
 
         for (bbox, text, prob) in result:
             if prob > 0.8 and contains_integer(text):
@@ -222,7 +224,7 @@ class MastermindCV:
                 # enter => valider une combinaison
                 zone = 4
 
-            jeu = self.jeux[self.lignes - 1]
+            jeu = self.jeu_courant()
 
             if zone >= 0 and zone <= 3:
                 # print("zone=", zone)
