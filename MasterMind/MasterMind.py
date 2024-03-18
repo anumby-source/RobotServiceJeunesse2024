@@ -15,6 +15,11 @@ class OCR:
     """
     def __init__(self):
         self.reader = easyocr.Reader(['fr'])  # Utiliser EasyOCR avec la langue anglaise
+        self.width = 640
+        self.height = 480
+
+    def shape(self):
+        return self.height, self.width
 
     def internal_camera(self):
         cap = cv2.VideoCapture(0)
@@ -31,7 +36,7 @@ class OCR:
         # frame = self.esp32cam()
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        return self.reader.readtext(frame)
+        return self.reader.readtext(frame), frame
 
 
 class Jeu:
@@ -46,9 +51,10 @@ class Jeu:
 class MastermindCV:
     def __init__(self):
         self.ocr = OCR()
+        self.frame = None
 
         # Créer une fenêtre OpenCV
-        cv2.namedWindow('Interface graphique')
+        cv2.namedWindow('MasterMind')
 
         # initialise les lignes d'info
         self.info_start = "Choisis une position"
@@ -119,9 +125,16 @@ class MastermindCV:
         ligne_height = padding + position_height + padding + info_height
 
         # l'image complète de l'IHM
-        width = padding + P * (position_width + padding)
-        height = padding + self.lignes * ligne_height
-        image = np.zeros((height, width, 3), dtype=np.uint8)
+        self.width1 = padding + P * (position_width + padding)
+        self.height1 = padding + self.lignes * ligne_height
+
+        width = self.width1 + self.ocr.width
+        height = self.ocr.height
+        if self.height1 > 480: height = self.height1
+
+        self.image = np.zeros((height, width, 3), dtype=np.uint8)
+
+        # np.copy()
 
         y = 0
 
@@ -141,16 +154,16 @@ class MastermindCV:
                     c = (0, 255, 0)
 
                 # print("draw_ihm. i=", i, x1, y1, x2, y2)
-                cv2.rectangle(image, (x1, y1), (x2, y2), c, -1)
+                cv2.rectangle(self.image, (x1, y1), (x2, y2), c, -1)
 
-                cv2.putText(image, labels[position], (x1 + 10, y1 + int(position_height*0.3)),
+                cv2.putText(self.image, labels[position], (x1 + 10, y1 + int(position_height*0.3)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2,
                             cv2.LINE_AA)
 
                 j = jeu.jeu[position]
                 # print("draw_ihm. position=", position, i, "jeu=", j)
                 if j > 0:
-                    cv2.putText(image, f"{j}", (x1 + 30, y1 + int(position_height*0.8)), 
+                    cv2.putText(self.image, f"{j}", (x1 + 30, y1 + int(position_height*0.8)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1.8, (255, 255, 255), 1,
                                 cv2.LINE_AA)
 
@@ -163,15 +176,19 @@ class MastermindCV:
             y2 = y1 + info_height
             c = (255, 255, 255)
 
-            cv2.rectangle(image, (x1, y1), (x2, y2), c, -1)  # Carré 1 (bleu)
-            cv2.putText(image, jeu.info, (x1 + 10, y1 + 25),
+            cv2.rectangle(self.image, (x1, y1), (x2, y2), c, -1)  # Carré 1 (bleu)
+            cv2.putText(self.image, jeu.info, (x1 + 10, y1 + 25),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 1,
                         cv2.LINE_AA)
 
             y += ligne_height
 
+        if self.frame is not None:
+            # print(self.frame.shape)
+            self.image[0:self.ocr.height,self.width1:self.width1 + self.ocr.width] = self.frame
+
         # Afficher l'image
-        cv2.imshow('Interface graphique', image)
+        cv2.imshow('MasterMind', self.image)
 
     def process_frame(self):
         def contains_integer(text):
@@ -181,7 +198,7 @@ class MastermindCV:
             except ValueError:
                 return False
 
-        result = self.ocr.read()
+        result, self.frame = self.ocr.read()
 
         jeu = self.jeu_courant()
 
