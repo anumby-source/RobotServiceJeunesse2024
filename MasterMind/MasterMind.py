@@ -34,6 +34,15 @@ class OCR:
         return self.reader.readtext(frame)
 
 
+class Jeu:
+    info_start = "Choisis une position"
+
+    def __init__(self):
+        self.info = Jeu.info_start
+        self.jeu = [-1 for i in range(P)]
+        self.position = -1
+
+
 class MastermindCV:
     def __init__(self):
         self.ocr = OCR()
@@ -48,14 +57,15 @@ class MastermindCV:
 
         # Définir les valeurs possibles
         self.valeurs = [i for i in range(1, N + 1)]
-
-        # initialise les jeux successives
-        self.jeu = [-1 for i in range(P)]
-        self.position = -1
-        self.lignes = 1
-
+        
         # initialise la combinaison secrète
         self.secret = random.sample(self.valeurs, P)
+
+        self.jeux = []
+        self.jeux.append(Jeu())
+
+        # initialise les jeux successives
+        self.lignes = 1
 
         # print("valeurs", self.valeurs, "code", self.secret)
 
@@ -69,8 +79,9 @@ class MastermindCV:
         exact = 0
         exists = 0
         off = 0
+        jeu = self.jeux[self.lignes - 1]
         for p in range(P):
-            k = self.jeu[p]
+            k = jeu.jeu[p]
             if k == self.secret[p]:
                 exact += 1
             elif k in self.secret:
@@ -80,19 +91,19 @@ class MastermindCV:
 
         r = False
         if exact == P:
-            self.info[self.lignes - 1] = f"Bravo !!!"
+            jeu.info = f"Bravo !!!"
             r = True
         else:
-            self.info[self.lignes - 1] = f"OK={exact} on={exists} off={off}"
-        # print("result", self.info[self.lignes - 1])
+            jeu.info = f"OK={exact} on={exists} off={off}"
+        # print("result", jeu.info)
 
         self.draw_ihm()
 
         return r
 
     # Fonction pour dessiner l'IHM
-    def draw_ihm(self, position=-1):
-        # print("draw_ihm. Position=", position, "lignes=", self.lignes, "info=", self.info)
+    def draw_ihm(self, current_position=-1):
+        # print("draw_ihm. Position=", current_position, "lignes=", self.lignes, "info=", self.info)
 
         position_width = 70
         position_height = 50
@@ -113,26 +124,28 @@ class MastermindCV:
 
         # on affiche successivement toutes les tentatives de combinaisons
         for ligne in range(self.lignes):
+            jeu = self.jeux[ligne]
+
             x1 = padding
             y1 = y + padding
             labels = ['A', 'B', 'C', 'D']
-            for i in range(P):
+            for position in range(P):
                 x2 = x1 + position_width
                 y2 = y1 + position_height
                 # Dessiner les zones sur l'image 
                 # la couleur change pour la zone en cours 
                 c = (255, 0, 0)
-                if i == position:
+                if ligne == (self.lignes - 1) and position == current_position:
                     c = (0, 255, 0)
 
                 # print("draw_ihm. i=", i, x1, y1, x2, y2)
                 cv2.rectangle(image, (x1, y1), (x2, y2), c, -1)
 
-                cv2.putText(image, labels[i], (x1 + 10, y1 + int(position_height*0.3)),
+                cv2.putText(image, labels[position], (x1 + 10, y1 + int(position_height*0.3)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2,
                             cv2.LINE_AA)
 
-                j = self.jeu[i]
+                j = jeu.jeu[position]
                 # print("draw_ihm. position=", position, i, "jeu=", j)
                 if j > 0:
                     cv2.putText(image, f"{j}", (x1 + 30, y1 + int(position_height*0.8)), 
@@ -149,7 +162,7 @@ class MastermindCV:
             c = (255, 255, 255)
 
             cv2.rectangle(image, (x1, y1), (x2, y2), c, -1)  # Carré 1 (bleu)
-            cv2.putText(image, self.info[ligne], (x1 + 10, y1 + 25),
+            cv2.putText(image, jeu.info, (x1 + 10, y1 + 25),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 1,
                         cv2.LINE_AA)
 
@@ -168,15 +181,17 @@ class MastermindCV:
 
         result = self.ocr.read()
 
+        jeu = self.jeux[self.lignes - 1]
+
         for (bbox, text, prob) in result:
             if prob > 0.8 and contains_integer(text):
                 t = int(text)
                 if t > 0 and t <= 8:
-                    # print("t=", t, "position=", self.position, "jeu=", self.jeu)
-                    if self.position >= 0:
-                        self.jeu[self.position] = t
-                        # print("process_frame. position=", self.position, "jeu=", self.jeu)
-                        self.draw_ihm(self.position)
+                    # print("t=", t, "position=", jeu.position, "jeu=", jeu)
+                    if jeu.position >= 0:
+                        jeu.jeu[jeu.position] = t
+                        # print("process_frame. position=", self.position, "jeu=", jeu)
+                        self.draw_ihm(jeu.position)
 
                     break
 
@@ -207,17 +222,18 @@ class MastermindCV:
                 # enter => valider une combinaison
                 zone = 4
 
+            jeu = self.jeux[self.lignes - 1]
+
             if zone >= 0 and zone <= 3:
                 # print("zone=", zone)
                 self.draw_ihm(zone)
-                self.position = zone
+                jeu.position = zone
             if zone == 4:
                 # on teste la combinaison
                 ok = self.result()
                 if not ok:
                     self.lignes += 1
-                    self.position = -1
-                    self.info.append(self.info_start)
+                    self.jeux.append(Jeu())
                     self.draw_ihm()
 
         cv2.destroyAllWindows()
