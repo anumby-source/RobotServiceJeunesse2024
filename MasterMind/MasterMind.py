@@ -3,9 +3,14 @@ import cv2
 import numpy as np
 import easyocr
 import requests
+import time
 
-N = 8
-P = 4
+N = 6
+P = 3
+
+internal_mode = 0
+robot_mode = 1
+mode_camera = internal_mode
 
 
 class OCR:
@@ -15,8 +20,12 @@ class OCR:
     """
     def __init__(self):
         self.reader = easyocr.Reader(['fr'])  # Utiliser EasyOCR avec la langue anglaise
-        self.width = 640
-        self.height = 480
+        if mode_camera == internal_mode:
+            self.width = 640
+            self.height = 480
+        else:
+            self.width = 640
+            self.height = 480
 
     def shape(self):
         return self.height, self.width
@@ -32,8 +41,10 @@ class OCR:
         return cv2.imdecode(image, cv2.IMREAD_COLOR)
 
     def read(self):
-        frame = self.internal_camera()
-        # frame = self.esp32cam()
+        if mode_camera == internal_mode:
+            frame = self.internal_camera()
+        else:
+            frame = self.esp32cam()
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         return self.reader.readtext(frame), frame
@@ -73,6 +84,8 @@ class MastermindCV:
         # initialise les jeux successives
         self.lignes = 1
 
+        self.t0 = time.time()
+
         # print("valeurs", self.valeurs, "code", self.secret)
 
         # Dessiner l'IHM
@@ -100,7 +113,7 @@ class MastermindCV:
 
         r = False
         if exact == P:
-            jeu.info = f"Bravo !!!"
+            jeu.info = f"Bravo c'est gagné!!!"
             r = True
         else:
             jeu.info = f"OK={exact} on={exists} off={off}"
@@ -119,13 +132,16 @@ class MastermindCV:
         padding = 10
 
         # zone d'information
-        info_height = int(position_height*0.6)
+        info_height = int(position_height*0.5)
 
         # chaque ligne de jeu
         ligne_height = padding + position_height + padding + info_height
 
         # l'image complète de l'IHM
-        self.width1 = padding + P * (position_width + padding)
+        p_min = P
+        if P < 4:
+            p_min = 4
+        self.width1 = padding + p_min * (position_width + padding)
         self.height1 = padding + self.lignes * ligne_height
 
         width = self.width1 + self.ocr.width
@@ -138,48 +154,82 @@ class MastermindCV:
 
         y = 0
 
+        white = (255, 255, 255)
+        blue = (255, 0, 0)
+        green = (0, 255, 0)
+        red = (0, 0, 255)
+        yellow = (0, 255, 255)
+        magenta = (255, 0, 255)
+        cyan = (255, 255, 0)
+
+        if mode_camera == internal_mode:
+            camera_tag = "I"
+        else:
+            camera_tag = "R"
+
+
         # on affiche successivement toutes les tentatives de combinaisons
         for ligne, jeu in enumerate(self.jeux):
 
             x1 = padding
             y1 = y + padding
-            labels = ['A', 'B', 'C', 'D']
+            labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
             for position in range(P):
                 x2 = x1 + position_width
                 y2 = y1 + position_height
                 # Dessiner les zones sur l'image 
                 # la couleur change pour la zone en cours 
-                c = (255, 0, 0)
+                color_fond = green
+                color_char = red
                 if ligne == (self.lignes - 1) and position == current_position:
-                    c = (0, 255, 0)
+                    color_fond = red
+                    color_char = white
 
                 # print("draw_ihm. i=", i, x1, y1, x2, y2)
-                cv2.rectangle(self.image, (x1, y1), (x2, y2), c, -1)
+                cv2.rectangle(self.image, (x1, y1), (x2, y2), color_fond, -1)
 
-                cv2.putText(self.image, labels[position], (x1 + 10, y1 + int(position_height*0.3)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2,
-                            cv2.LINE_AA)
+                cv2.putText(self.image,
+                            text=labels[position],
+                            org=(x1 + 10, y1 + int(position_height*0.3)),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                            fontScale=0.6,
+                            color=white,
+                            thickness=2,
+                            lineType=cv2.LINE_AA)
 
                 j = jeu.jeu[position]
                 # print("draw_ihm. position=", position, i, "jeu=", j)
                 if j > 0:
-                    cv2.putText(self.image, f"{j}", (x1 + 30, y1 + int(position_height*0.8)),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1.8, (255, 255, 255), 1,
-                                cv2.LINE_AA)
+                    cv2.putText(self.image,
+                                text=f"{j}",
+                                org=(x1 + 30, y1 + int(position_height*0.8)),
+                                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                                fontScale=1.8,
+                                color=color_char,
+                                thickness=2,
+                                lineType=cv2.LINE_AA)
 
                 x1 += position_width + padding
 
             x1 = padding
             y1 = y + padding + position_height + padding
 
-            x2 = x1 + P * (position_width + padding) - padding
+            x2 = x1 + p_min * (position_width + padding) - padding
             y2 = y1 + info_height
-            c = (255, 255, 255)
+            c = white
 
+            now = int(time.time() - self.t0)
+            minutes = int(now/60)
+            secondes = now % 60
             cv2.rectangle(self.image, (x1, y1), (x2, y2), c, -1)  # Carré 1 (bleu)
-            cv2.putText(self.image, jeu.info, (x1 + 10, y1 + 25),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 1,
-                        cv2.LINE_AA)
+            cv2.putText(self.image,
+                        text="(" + camera_tag + ") " + jeu.info + f" {minutes}m{secondes}s",
+                        org=(x1 + 10, y1 + 18),
+                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                        fontScale=0.6,
+                        color=red,
+                        thickness=1,
+                        lineType=cv2.LINE_AA)
 
             y += ligne_height
 
@@ -190,6 +240,20 @@ class MastermindCV:
         # Afficher l'image
         cv2.imshow('MasterMind', self.image)
 
+    def valid(self, essai):
+        jeu = self.jeu_courant()
+        if jeu.position >= 0:
+            for p in range(P):
+                k = jeu.jeu[p]
+                print("valid> p=", p, "k=", k, "pos=", jeu.position, "essai=", essai)
+                if p != jeu.position:
+                    if essai == k:
+                        print("valid> False")
+                        return False
+
+        print("valid> True")
+        return True
+
     def process_frame(self):
         def contains_integer(text):
             try:
@@ -199,22 +263,34 @@ class MastermindCV:
                 return False
 
         result, self.frame = self.ocr.read()
-
         jeu = self.jeu_courant()
 
+        self.draw_ihm(jeu.position)
+
+        if jeu.position == -1:
+            jeu.info = f"choisis une position"
+        else:
+            jeu.info = f"choisis un chiffre"
+
         for (bbox, text, prob) in result:
-            if prob > 0.8 and contains_integer(text):
+            if prob > 0.5 and contains_integer(text):
                 t = int(text)
-                if t > 0 and t <= 8:
+                if t > 0 and t <= N:
                     # print("t=", t, "position=", jeu.position, "jeu=", jeu)
                     if jeu.position >= 0:
-                        jeu.jeu[jeu.position] = t
-                        # print("process_frame. position=", self.position, "jeu=", jeu)
-                        self.draw_ihm(jeu.position)
+                        if self.valid(t):
+                            jeu.jeu[jeu.position] = t
+                            # print("process_frame. position=", self.position, "jeu=", jeu)
+                            jeu.info = f"chiffre {t} choisi"
+                        else:
+                            jeu.info = f"doublons interdits ({t})"
+                    self.draw_ihm(jeu.position)
 
                     break
 
     def run(self):
+        global mode_camera
+
         while True:
             # Traitement de l'image pour détecter les chiffres et les reconnaître
             self.process_frame()
@@ -237,6 +313,12 @@ class MastermindCV:
                 zone = 2
             elif k == ord('d') or k == ord('D'):
                 zone = 3
+            elif k == ord('i') or k == ord('I'):
+                # internal camera
+                mode_camera = internal_mode
+            elif k == ord('r') or k == ord('R'):
+                # robot
+                mode_camera = robot_mode
             elif k == 13:
                 # enter => valider une combinaison
                 zone = 4
